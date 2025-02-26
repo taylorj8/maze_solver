@@ -17,7 +17,6 @@ def get_file_name():
 
 
 def append_to_csv(results, csv_file_path):
-
     with open(csv_file_path, 'a', newline='') as csv_file:
         field_names = ["maze", "algorithm", "execution_time (s)", "peak_memory (kB)", "path_length", "total_moves", "epochs"]
         writer = csv.DictWriter(csv_file, fieldnames=field_names)
@@ -32,18 +31,20 @@ if __name__ == '__main__':
     args = sys.argv
 
     if args[1] == '-benchmark':
+        results_file = get_file_name()
         try:
             start_size = int(args[2])
             end_size = int(args[3]) + 1
             for i in range(start_size, end_size, 10):
                 maze_size = str(i)
-                subprocess.run(["python", "main.py", "-s", "all", "-w", maze_size, "-h", maze_size, "-b", "-l"])
+                subprocess.run(["python", "main.py", "-s", "all", "-w", maze_size, "-h", maze_size, "-b", "-l", results_file])
             console.display("Benchmarking complete. Results saved to results.csv.")
         except:
             console.display("Usage: python maze.py -benchmark <start_size> <end_size>")
         console.get_key()
         exit()
 
+    results_file = get_file_name()
     if len(args) > 1:
         try:
             if '-w' in args:
@@ -78,6 +79,10 @@ if __name__ == '__main__':
             elif '-b' in args:
                 for solver in solvers:
                     solver.mode = 'benchmark'
+            if '-l' in args and args[-1] != '-l':
+                arg = args[args.index('-l') + 1]
+                if not arg.startswith('-'):
+                    results_file = arg
         except:
             print("Usage: python maze.py -w <width> -h <height> -s <solvers> -i/-b")
             exit()
@@ -96,7 +101,6 @@ if __name__ == '__main__':
         solver.set_maze(maze)
 
     logging = '-l' in args
-    results_file = get_file_name()
 
     try:
         for solver in solvers:

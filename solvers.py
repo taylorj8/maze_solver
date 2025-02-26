@@ -348,6 +348,7 @@ class MDPPolicyIterationSolver(MazeGame):
         self.policy = {}
         self.costs = {}
         self.epoch = 0
+        self.convergence_threshold = 0.5
 
     def get_results(self):
         return {
@@ -399,7 +400,7 @@ class MDPPolicyIterationSolver(MazeGame):
         epoch = 0
         delta = 1
         # repeat until no changes occur or for 500 epochs
-        while epoch < 500 and delta > 0:
+        while delta > self.convergence_threshold:
             epoch += 1
             delta = 0
             for cell in self.maze.cells:
